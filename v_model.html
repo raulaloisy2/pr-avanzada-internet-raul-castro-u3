@@ -33,9 +33,34 @@
         </button>
 
         <h2>El Resultado es : <span v-if="total!=0"> {{total}}</h2> </span>
+        <hr>
+        <br>
+        <br>
+
+        <form action="">
+            <fieldset>
+                <legend> Nombre</legend>
+                <input type="text" v-model="username" name="">
+            </fieldset>
+            <fieldset>
+                <legend>Apellido</legend>
+                <input type="text" v-model="lastname" name="">
+            </fieldset>
+
+            <button type="button" v-on:click="addPerson">REGISTRAR PERSONA</button>
+        </form>
+
+        <ul>
+            <li v-for="item in  persons">
+                {{item.name}} - {{item.apellido}}
+            </li>
+        </ul>
+    
 
 
     </div>
+
+    
 
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script type="text/javascript">
@@ -49,14 +74,33 @@
             const num1 =0;
             const num2 =0;
             const total =0;
+            const username = ref(''), lastname = ref('');
+            const persons = ref([]);
             return {
                 name: ref(''),
                 count: ref(0),
                 num1: ref(0),
                 num2: ref(0),
-                total: ref(0)
+                total: ref(0),
+                username,
+                lastname,
+                persons
                
             }
+   
+        },
+        methods:{
+                addPerson(){
+                    const person= {
+                        name:this.username,
+                       apellido:this.lastname
+
+                    }
+                    this.persons.push(person)
+                    console.log("Hola Crayola");
+                    console.log(this.username);
+                    console.log(this.lastname);
+                }
         }
         }).mount('#container_app')
 
