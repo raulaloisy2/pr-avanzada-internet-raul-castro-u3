@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Usando Vue Rulo</title>
+    <style type="text/css">
+        body {
+            background-color: rgb(180, 152, 245);
+        }
+    </style>
+</head>
+
+<body>
+    <center>
+        <br> <br>
+    <div class="container" id="container_app">
+        <h1> ¡Hola  {{ name }}  ! </h1><br>
+        
+        <input type="text" v-model="name" name=""><br>
+
+        <button @click="count++">
+            Count is {{count}}
+        </button><br><br>
+        <input type="" v-model="num1" name=""><br>
+        <input type="" v-model="num2" name=""><br>
+
+        <button @click="total= ((+num1)+(+num2))">
+            Suma dos numeros
+        </button>
+
+        <h2>El Resultado es : <span v-if="total!=0"> {{total}}</h2> </span>
+
+
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script type="text/javascript">
+
+        const { createApp, ref } = Vue
+
+        createApp({
+        setup() {
+            const message ="";
+            const name ="";
+            const num1 =0;
+            const num2 =0;
+            const total =0;
+            return {
+                name: ref(''),
+                count: ref(0),
+                num1: ref(0),
+                num2: ref(0),
+                total: ref(0)
+               
+            }
+        }
+        }).mount('#container_app')
+
+    </script>
+</center>
+</body>
+
+</html>
