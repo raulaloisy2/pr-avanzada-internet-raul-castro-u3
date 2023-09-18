@@ -7,16 +7,22 @@
         content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Usando Vue Rulo</title>
-    <style type="text/css">
-        body {
-            background-color: rgb(180, 152, 245);
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="index.css">
+
 </head>
 
 <body>
+    <div class="container" id="container_app">
+    <form class="login">
+        <input type="text" placeholder="Username" v-model ="email" email ="">
+        <input type="password" placeholder="Password" v-model="password" password="" >
+        <button  @click ="login">Login</button>
+      </form>
+    </div>
+      
+      <a href="https://codepen.io/davinci/" target="_blank">check my other pens</a>
     <center>
-        <br> <br>
+    <!-- <br> <br>
     <div class="container" id="container_app">
         <h1> ¡Hola  {{ name }}  ! </h1><br>
         
@@ -58,7 +64,7 @@
     
 
 
-    </div>
+    </div> -->
 
     
 
@@ -66,6 +72,49 @@
     <script type="text/javascript">
 
         const { createApp, ref } = Vue
+
+        createApp({
+          setup(){
+
+            users= ref([]);
+            email= ref('');
+            password = ref('');
+       
+                return {
+                    users,
+                    email,
+                    password
+                }
+          },
+          methods:{
+            async login(){
+                const response =await fetch("user.json");
+                const users= await response.json();
+                console.log(users.email );
+                let login=false;
+                
+                users.forEach((users)=>
+                {
+                    if(this.email == users.email){
+                        if (this.password == users.password){
+                            alert("Bienvenido");
+                            login=true;
+                        }else{
+                            alert("Verifica tus credenciales");
+
+                        }
+                    }else{
+                    }
+                }
+
+                )
+                
+            
+            }
+          }
+        }).mount('#container_app');
+        /*
+       
 
         createApp({
         setup() {
@@ -104,6 +153,7 @@
         }
         }).mount('#container_app')
 
+    */
     </script>
 </center>
 </body>
