@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -9,72 +9,83 @@
     <title>Usando Vue Rulo</title>
     <link rel="stylesheet" type="text/css" href="index.css">
     <link rel="stylesheet" type="text/css" href="table.css">
-
 </head>
 
 <body>
     <div class="container" id="container_app">
 
-    <form class="login"  v-if="!is_login">
-        <input type="text" placeholder="Username" v-model ="email" email ="">
-        <input type="password" placeholder="Password" v-model="password" password="" >
-        <button  @click ="login">Login</button>
-      </form>
+        <form class="login" v-if="!is_login">
+            <input type="text" placeholder="Username" v-model="email">
+            <input type="password" placeholder="Password" v-model="password">
+            <button @click="login">Login</button>
+        </form>
 
-    <div v-if= "is_login">
+        <div v-if="is_login">
 
-        <table class="customTable">
-            <thead>
-              <tr>
-                <th>Personal data</th>
-                <th>Contact data</th>
-                <th>Company Data</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="u in users">
-                <td>{{u.name}}, {{u.username}}</td>
-                <td>{{u.email}}, {{u.phone}}</td>
-                <td>{{u.company.name}}, {{u.company.bs}}</td>
-                <td>
-                    <button>Edit</button>
-                    <button>Delete</button>
-                </td>
-              </tr>
-    
-            </tbody>
-          </table>
-          <!-- Generated at CSSPortal.com -->   
-          <button @click ="add" > New Rercord</button>
+            <table class="customTable">
+                <thead>
+                    <tr>
+                        <th>Personal data</th>
+                        <th>Contact data</th>
+                        <th>Company Data</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(user, index) in users" :key="user.id">
+                        <td>{{ user.name }}, {{ user.username }}</td>
+                        <td>{{ user.email }}, {{ user.phone }}</td>
+                        <td>{{ user.company.name }}, {{ user.company.bs }}</td>
+                        <td>
+                            <button @click="editUser(user)">Edit</button>
+                            <button @click="deleteUser(user.id)">Delete</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <!-- Generated at CSSPortal.com -->
+            <button @click="add">New Record</button>
 
-          <div v-if="action=='add'">
-            <div>
-                <label type= "">New Person</label>
-                <input type="text" v-model="new_user.name">
-              </div> 
-    
-              <div>
-                <label type="text-">Email</label>
-                <input type="text" v-model="new_user.email">
-              </div>
-    
-            <div>
-                <label type="text-">Company Name</label>
-                <input type="text" v-model="new_user.company_name">
+            <div v-if="action === 'add'">
+                <div>
+                    <label>New Person</label>
+                    <input type="text" v-model="new_user.name">
+                </div>
+
+                <div>
+                    <label>Email</label>
+                    <input type="text" v-model="new_user.email">
+                </div>
+
+                <div>
+                    <label>Company Name</label>
+                    <input type="text" v-model="new_user.company_name">
+                </div>
+                <button @click="save('create')">Save User Data</button>
             </div>
-            <button @click="save('create')">Save User Data</button>
-          </div>
 
-     </div>
-
-
+            <div v-if="action === 'edit' && editingUser">
+                <div>
+                    <label>Edit Person</label>
+                    <input type="text" v-model="editingUser.name">
+                </div>
+            
+                <div>
+                    <label>Email</label>
+                    <input type="text" v-model="editingUser.email">
+                </div>
+            
+                <div>
+                    <label>Company Name</label>
+                    <input type="text" v-model="editingUser.company.name">
+                </div>
+                <button @click="save('edit')">Save Changes</button>
+            </div>
+        </div>
     </div>
-      
-      <a href="https://codepen.io/davinci/" target="_blank">check my other pens</a>
-    <center>
 
-    
+    <a href="https://codepen.io/davinci/" target="_blank">Check my other pens</a>
+    <center>
 
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script type="text/javascript">
@@ -82,84 +93,116 @@
         const { createApp, ref } = Vue
 
         createApp({
-          setup(){
+            setup() {
+                const users = ref([]);
+                const email = ref('');
+                const password = ref('');
+                const action = ref('');
+                const new_user = ref({});
+                const editingUser = ref(null);
+                const isEditing = ref(false);
 
-            users= ref([]);
-            email= ref('');
-            password = ref('');
-            action=ref('');
-            new_user = ref([]);
+                let tmp = false;
+                tmp = localStorage.getItem("is_login");
+                if (tmp == null) {
+                    tmp = false;
+                }
+                const is_login = tmp;
 
-           
-         let tmp = false;
-         tmp = localStorage.getItem("is_login");
-         if(tmp == null){
-             tmp = false;
-         }
-            is_login = tmp;
-            console.log(is_login)
-       
                 return {
                     users,
                     email,
                     password,
                     is_login,
                     action,
-                    new_user
+                    new_user,
+                    editingUser,
+                    isEditing
                 }
-          },
+            },
 
+            mounted: function () {
+                const getUsers = async () => {
+                    const response = await fetch("user.json?v=1.1");
+                    this.users = await response.json();
+                }
+                if (this.is_login) {
+                    getUsers();
+                }
+            },
 
-          mounted: function(){
-            const getUsers = async () =>{
-                const response = await fetch("user.json?v=1.1");
-                const tmp_users= await response.json();
-                this.users = tmp_users;
-            }
-            if(this.is_login){
-                getUsers();
-            }
-          },
-          methods:{
-            async login(){
-                const response =await fetch("user.json?v=1.1");
-               this.users= await response.json();
-               this.is_login=false;
+            methods: {
+                async login() {
+                    const response = await fetch("user.json?v=1.1");
+                    this.users = await response.json();
+                    this.is_login = false;
 
-                this.users.forEach((users)=>
-                {
-                    if(this.email == users.email){
-                        if (this.password == users.password){
-                            this.is_login=true;
-                            alert("Bienvenido");
-                            localStorage.setItem("user_data", JSON.stringify(users));
-                            localStorage.setItem("is_login", "true");
+                    this.users.forEach((user) => {
+                        if (this.email == user.email) {
+                            if (this.password == user.password) {
+                                this.is_login = true;
+                                alert("Welcome");
+                                localStorage.setItem("user_data", JSON.stringify(user));
+                                localStorage.setItem("is_login", "true");
+                            }
+                        }
+                    });
+                },
+
+                add() {
+                    this.action = "add";
+                },
+
+                save(action) {
+                    if (action === 'create') {
+                        const newUser = {
+                            id: this.users.length + 1,
+                            name: this.new_user.name,
+                            email: this.new_user.email,
+                            company: {
+                                name: this.new_user.company_name,
+                                bs: ''
+                            }
+                        };
+                        this.users.push(newUser);
+                        this.new_user = {};
+                    } else if (action === 'edit') {
+                        if (this.editingUser) {
+                            // Busca el índice del usuario editado en el arreglo
+                            const index = this.users.findIndex(user => user.id === this.editingUser.id);
+                            if (index !== -1) {
+                                // Actualiza los datos del usuario en el arreglo
+                                this.users[index] = { ...this.editingUser };
+
+                                // Reinicia el modo de edición
+                                this.isEditing = false;
+                                this.editingUser = null;
+                            }
                         }
                     }
+                },
+
+                deleteUser(id) {
+                    const index = this.users.findIndex(user => user.id === id);
+                    if (index !== -1) {
+                        const deletedUser = this.users[index];
+                        this.users.splice(index, 1);
+                        alert(`User ${deletedUser.name} deleted successfully`);
+                    } else {
+                        alert("User not found");
+                    }
+                },
+
+                editUser(user) {
+                    this.editingUser = { ...user };
+                    this.isEditing = true;
+                    this.action = 'edit';
                 }
-                );  
-            },
-            add(){
-                this.action="add";
-              },
-              save(action){
-                console.log(action);
-
-                let company=[];
-                company.name = this.new_user.company_name;
-                this.new_user.company=company;
-                this.users.push(this.new_user);
-                this.new_user=[];
-              },
-          },
-
-          update(users){
-            console.log("hola");
-          }
+            }
         }).mount('#container_app');
 
     </script>
-</center>
+    </center>
 </body>
 
 </html>
